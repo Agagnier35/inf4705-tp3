@@ -2,18 +2,18 @@ package com.inf4705.tp3.model;
 
 public class DestinationLink {
     private Destination destination;
-    private int distance;
+    private int time;
 
-    public DestinationLink(Destination destination, int distance) {
+    public DestinationLink(Destination destination, int time) {
         this.destination = destination;
-        this.distance = distance;
+        this.time = time;
     }
 
     public Destination getDestination() {
         return destination;
     }
 
-    public int getDistance() {
-        return distance;
+    public int getTime() {
+        return time;
     }
 }
