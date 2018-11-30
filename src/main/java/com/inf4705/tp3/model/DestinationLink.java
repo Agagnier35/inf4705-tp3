@@ -16,4 +16,9 @@ public class DestinationLink {
     public int getTime() {
         return time;
     }
+
+    public double getRatio() {
+        Double ratio = (double) destination.getAppreciation() / (double)time;
+        return ratio;
+    }
 }

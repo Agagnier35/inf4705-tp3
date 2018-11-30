@@ -5,6 +5,8 @@ import com.inf4705.tp3.model.DestinationLink;
 import com.inf4705.tp3.model.Solution;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class PathOptimizer {
@@ -39,7 +41,18 @@ public class PathOptimizer {
                 System.out.println(bestSolution);
             }
         } else if(currentSolution.getTime() < timeLimit) {
-            for(DestinationLink link : destination.getLinks()) {
+            List<DestinationLink> currentDestinationsLinks = new ArrayList<>(destination.getLinks());
+            // Go back to 0 first (Ensure an answer at each node of the tree)
+            Solution firstSolution = new Solution(currentSolution, currentDestinationsLinks.get(0));
+            if(currentDestinationsLinks.get(0).getDestination().getId() == 0) {
+                action(currentDestinationsLinks.get(0).getDestination(), firstSolution);
+                currentDestinationsLinks.remove(0);
+            }
+
+            // Sort by best appreciation/distance ratio
+            Collections.sort(currentDestinationsLinks, (DestinationLink d1, DestinationLink d2) -> Double.compare(d2.getRatio(), d1.getRatio()));
+
+            for(DestinationLink link : currentDestinationsLinks) {
                 if(!currentSolution.getPath().contains(link.getDestination().getId()) || link.getDestination().getId() == 0) {
                     Solution alternateSolution = new Solution(currentSolution, link);
                     action(link.getDestination(), alternateSolution);
