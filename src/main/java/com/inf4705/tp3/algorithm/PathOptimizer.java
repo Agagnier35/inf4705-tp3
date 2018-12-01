@@ -33,12 +33,14 @@ public class PathOptimizer {
 
     private void action(Destination destination, Solution currentSolution) {
         // if the current destination id is equal to the initialDestination id
-        if(destination.getId() == currentSolution.getPath().get(0) && currentSolution.getPath().size() > 1) {
+        if(destination.getId() == currentSolution.getPath().get(0) && currentSolution.getPath().size() > 1 && currentSolution.getTime() < timeLimit) {
             // Its a full cycle
             // Log if appreciation is higher
             if(currentSolution.getAppreciation() > bestSolution.getAppreciation()) {
                 bestSolution = currentSolution;
                 System.out.println(bestSolution);
+                System.out.println(bestSolution.getTime());
+                System.out.println(bestSolution.getAppreciation());
             }
         } else if(currentSolution.getTime() < timeLimit) {
             List<DestinationLink> currentDestinationsLinks = new ArrayList<>(destination.getLinks());
