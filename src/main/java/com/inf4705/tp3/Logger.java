@@ -15,6 +15,7 @@ public class Logger {
             System.out.println(solution.toString());
         } else {
             System.out.print(solution.getAppreciation());
+            System.out.println();
         }
     }
 }

@@ -6,24 +6,36 @@ import com.inf4705.tp3.fileReader.FileReader;
 import com.inf4705.tp3.fileWriter.Writer;
 import com.inf4705.tp3.model.Solution;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLDecoder;
 
 public class ApplicationStartup {
-    public static void main(String[] args) throws Exception {
-        String filePath = args[0];
-        setUpOptionalArguments(args, 1);
+    private static String filePath = "";
+    private static Boolean absolutePath = false;
 
-        DecryptedFile file = new FileReader(filePath).readFile();
+    public static void main(String[] args) throws Exception {
+        Writer writer = new Writer();
+
+        setUpOptionalArguments(args);
+
+        DecryptedFile file;
+        if(absolutePath) {
+            file = new FileReader(filePath).readFile();
+        } else {
+            file = new FileReader(getJarPath() + filePath).readFile();
+        }
 
         PathOptimizer optimizer = new PathOptimizer();
 
+        // Print best solution in file when closing
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                Solution bestSolution = optimizer.getBestSolution();
-                Writer writer = new Writer();
+                Solution currentBestSolution = optimizer.getBestSolution();
                 try {
-                    writer.printSolution(bestSolution);
+                    writer.printSolution(currentBestSolution);
                 }
                 catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
@@ -32,14 +44,32 @@ public class ApplicationStartup {
 
         });
 
-        optimizer.optimizePath(file.getDestination(), file.getTimeLimit());
+        // Print the best solution when algorithm gets the exact answer
+        Solution bestSolution = optimizer.optimizePath(file.getDestination(), file.getTimeLimit());
+        try {
+            writer.printSolution(bestSolution);
+        }
+        catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
-    private static void setUpOptionalArguments(String[] args, int index) {
-        if (args.length > index) {
-            if ("-p".equals(args[index])) {
+    private static void setUpOptionalArguments(String[] args) {
+        for (String arg: args) {
+            if("-p".equals(arg)) {
                 Logger.p = true;
+            } else if("-e".equals(arg)) {
+                absolutePath = true;
+            } else if("".equals(filePath)) {
+                filePath = arg;
             }
         }
+    }
+
+    private static String getJarPath() throws UnsupportedEncodingException {
+        URL url = ApplicationStartup.class.getProtectionDomain().getCodeSource().getLocation();
+        String jarPath = URLDecoder.decode(url.getFile(), "UTF-8");
+        String parentPath = new File(jarPath).getParentFile().getPath();
+        return parentPath;
     }
 }
